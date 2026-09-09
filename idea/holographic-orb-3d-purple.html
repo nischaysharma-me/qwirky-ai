@@ -1,0 +1,433 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Quirky 3D Holographic Sphere</title>
+<style>
+*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden}body{background:#06061a}
+.room{position:fixed;inset:0;overflow:hidden;background:radial-gradient(circle at 53% 48%,rgba(40,20,70,.22),transparent 42%),linear-gradient(180deg,#07071a 0 68%,#0c0e22 68% 100%)}
+.back-wall{position:absolute;inset:0;background:linear-gradient(90deg,transparent 0 4.8%,rgba(55,50,100,.5) 4.9% 6.2%,rgba(14,12,38,.9) 6.3% 15.4%,rgba(55,50,95,.18) 15.5% 16%,transparent 16.1%),linear-gradient(90deg,transparent 0 20.2%,rgba(22,20,50,.42) 20.3% 21%,transparent 21.1% 80%,rgba(18,16,48,.48) 80.1% 82%,transparent 82.1%),linear-gradient(180deg,transparent 0 8%,rgba(38,32,72,.24) 8.1% 8.6%,transparent 8.7% 66%,rgba(50,40,68,.14) 66.1% 66.6%,transparent 66.7%)}
+.left-column{position:absolute;left:5.4%;top:0;width:15.8%;height:100%;background:linear-gradient(90deg,rgba(48,40,88,.78),rgba(20,18,48,.9) 26%,rgba(28,24,55,.78) 78%,rgba(7,6,20,.96));box-shadow:inset 2px 0 rgba(80,68,140,.18),inset -2px 0 rgba(0,0,0,.5),14px 0 30px rgba(0,0,0,.2)}.left-column:before{content:"";position:absolute;left:48%;top:0;bottom:0;width:2px;background:rgba(72,60,128,.16)}
+.left-bay{position:absolute;left:0;top:8%;width:5.4%;height:60%;background:linear-gradient(180deg,rgba(34,28,75,.65),rgba(8,6,24,.88) 19% 77%,rgba(22,18,50,.6));border-right:1px solid rgba(68,55,130,.2)}
+.beam{position:absolute;z-index:4;top:-2%;right:-8%;width:73%;height:28%;transform:rotate(20.5deg);transform-origin:100% 0;background:linear-gradient(180deg,rgba(78,72,125,.92),rgba(52,46,95,.95) 22%,rgba(28,24,62,.97) 75%,rgba(10,8,32,.98));border-bottom:7px solid rgba(18,14,72,.78);box-shadow:0 11px 20px rgba(0,0,0,.6),inset 0 -2px rgba(90,78,170,.24)}.beam:before,.beam:after{content:"";position:absolute;left:5%;right:3%;height:4px;background:rgba(130,118,180,.25);box-shadow:0 2px rgba(8,6,30,.75)}.beam:before{top:23%}.beam:after{top:66%}
+.right-wall{position:absolute;right:0;top:18%;bottom:32%;width:24%;background:linear-gradient(90deg,rgba(8,6,22,.12),rgba(5,4,16,.9));border-left:1px solid rgba(38,30,95,.12)}
+.ceiling-lights{position:absolute;z-index:1;right:7%;top:22%;width:17%;height:18%;opacity:.4;transform:skewX(-24deg);background:repeating-linear-gradient(180deg,transparent 0 22px,rgba(120,80,180,.65) 23px 25px,transparent 26px 39px);clip-path:polygon(33% 0,100% 0,70% 100%,0 100%)}
+.stairs{position:absolute;right:-2%;top:64%;width:30%;height:24%;opacity:.55;background:repeating-linear-gradient(180deg,transparent 0 17px,rgba(55,40,85,.48) 18px 23px);transform:skewX(-15deg);border-top:2px solid rgba(65,48,100,.32)}.stairs:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(10,8,26,.32) 38%,rgba(3,2,12,.88))}
+.floor{position:absolute;left:0;right:0;bottom:0;height:32%;overflow:hidden;background:linear-gradient(180deg,rgba(10,8,25,.55),rgba(10,8,32,.97));border-top:1px solid rgba(65,50,95,.15)}.floor:before{content:"";position:absolute;inset:-20% -30% -80%;transform:perspective(500px) rotateX(64deg);transform-origin:50% 0;background:repeating-linear-gradient(90deg,transparent 0 92px,rgba(60,48,105,.15) 93px 95px),repeating-linear-gradient(180deg,transparent 0 70px,rgba(65,52,100,.12) 71px 73px)}.floor:after{content:"";position:absolute;left:18%;right:22%;top:0;height:9px;background:linear-gradient(90deg,transparent,rgba(85,65,125,.3),transparent);transform:skewX(-18deg)}
+.vignette{position:absolute;z-index:8;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 49%,transparent 32%,rgba(3,2,12,.18) 62%,rgba(2,1,10,.6) 100%)}
+canvas#c3d{position:absolute;z-index:3;inset:0;display:block;width:100%;height:100%}
+#talk-ui{position:fixed;z-index:20;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:12px;align-items:center}
+#talk-ui button{background:rgba(140,60,255,.12);border:1px solid rgba(160,80,255,.35);color:rgba(200,160,255,.9);font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;padding:7px 18px;cursor:pointer;text-transform:uppercase;transition:all .3s;border-radius:2px}
+#talk-ui button:hover{background:rgba(160,80,255,.28);border-color:rgba(200,160,255,.7)}
+#talk-ui button.active{background:rgba(140,40,255,.32);border-color:rgba(200,160,255,.9);box-shadow:0 0 14px rgba(160,80,255,.5)}
+#talk-label{color:rgba(160,100,255,.35);font-family:'Courier New',monospace;font-size:8px;letter-spacing:3px}
+#amp-bar{width:90px;height:5px;background:rgba(100,30,200,.12);border-radius:2px;overflow:hidden}
+#amp-fill{height:100%;width:0%;background:linear-gradient(90deg,#7722dd,#cc88ff);border-radius:2px;box-shadow:0 0 6px rgba(160,80,255,.5);transition:width .05s}
+</style></head><body>
+<main class="room"><div class="back-wall"></div><div class="left-bay"></div><div class="left-column"></div><div class="right-wall"></div><div class="ceiling-lights"></div><div class="stairs"></div><div class="floor"></div><div class="beam"></div><div class="vignette"></div>
+<canvas id="c3d"></canvas>
+<div id="talk-ui">
+<span id="talk-label">VOICE</span>
+<button id="btn-mic">MIC · M</button>
+<button id="btn-sim">SIMULATE · T</button>
+<div id="amp-bar"><div id="amp-fill"></div></div>
+</div>
+</main>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+//  TALK ENGINE
+// ══════════════════════════════════════════════════════════════════════════════
+window.TALK={amplitude:0,smoothAmp:0,active:false,mode:'none',audioCtx:null,analyser:null,dataArray:null,stream:null,simPhase:0};
+async function startMic(){try{const T=window.TALK;if(T.mode==='sim')toggleSim();T.audioCtx=new(window.AudioContext||window.webkitAudioContext)();T.stream=await navigator.mediaDevices.getUserMedia({audio:true});const src=T.audioCtx.createMediaStreamSource(T.stream);T.analyser=T.audioCtx.createAnalyser();T.analyser.fftSize=512;T.analyser.smoothingTimeConstant=0.72;src.connect(T.analyser);T.dataArray=new Uint8Array(T.analyser.frequencyBinCount);T.mode='mic';T.active=true;document.getElementById('btn-mic').classList.add('active');document.getElementById('btn-sim').classList.remove('active')}catch(e){console.warn('Mic unavailable:',e)}}
+function stopMic(){const T=window.TALK;if(T.stream)T.stream.getTracks().forEach(t=>t.stop());if(T.audioCtx&&T.audioCtx.state!=='closed')T.audioCtx.close().catch(()=>{});T.stream=null;T.audioCtx=null;T.analyser=null;T.mode='none';T.active=false;T.amplitude=0;T.smoothAmp=0;document.getElementById('btn-mic').classList.remove('active')}
+function toggleSim(){const T=window.TALK;if(T.mode==='mic')stopMic();if(T.mode==='sim'){T.mode='none';T.active=false;T.amplitude=0;T.smoothAmp=0;document.getElementById('btn-sim').classList.remove('active')}else{T.mode='sim';T.active=true;T.simPhase=Math.random()*100;document.getElementById('btn-sim').classList.add('active');document.getElementById('btn-mic').classList.remove('active')}}
+function updateTalkAmplitude(){const T=window.TALK;if(T.mode==='mic'&&T.analyser){T.analyser.getByteFrequencyData(T.dataArray);let sum=0;for(let i=0;i<T.dataArray.length;i++)sum+=T.dataArray[i];T.amplitude=Math.min(1,sum/T.dataArray.length/128)}else if(T.mode==='sim'){T.simPhase+=0.018;const p=T.simPhase;const syllable=Math.sin(p*9.2)*.5+.5,word=Math.sin(p*2.6)*.5+.5,breath=Math.sin(p*0.7)*.5+.5,burst=Math.pow(Math.sin(p*15.3)*.5+.5,3),pause=Math.sin(p*0.42)>-.18?1:0;T.amplitude=Math.min(1,(syllable*.38+word*.24+burst*.22+breath*.16)*pause)}else{T.amplitude*=0.90}T.smoothAmp+=(T.amplitude-T.smoothAmp)*0.2;const fill=document.getElementById('amp-fill');if(fill)fill.style.width=(T.smoothAmp*100)+'%'}
+document.addEventListener('keydown',e=>{if(e.repeat)return;if(e.key==='t'||e.key==='T')toggleSim();if(e.key==='m'||e.key==='M'){if(window.TALK.mode==='mic')stopMic();else startMic()}});
+document.addEventListener('DOMContentLoaded',()=>{document.getElementById('btn-mic').addEventListener('click',()=>{if(window.TALK.mode==='mic')stopMic();else startMic()});document.getElementById('btn-sim').addEventListener('click',toggleSim)});
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(()=>{'use strict';
+
+// ── Seeded RNG ──────────────────────────────────────────────────────────────
+let seed=0x7a2f19d3;
+const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+const TAU=Math.PI*2;
+
+// ── Renderer (FULL OPACITY — this IS the visual now) ────────────────────────
+const canvas=document.getElementById('c3d');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.setClearColor(0,0);
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,.1,100);
+camera.position.set(0,0,5.8);
+
+// ── Purple palette ──────────────────────────────────────────────────────────
+const PURPLE=0xaa44ff, DEEP=0x7722dd, HOT=0xcc88ff, BRIGHT=0xe0c0ff, CORE=0xddaaff;
+
+// ── Material factories ──────────────────────────────────────────────────────
+const lm=(c=PURPLE,o=.32)=>new THREE.LineBasicMaterial({color:c,transparent:true,opacity:o,blending:THREE.AdditiveBlending,depthWrite:false});
+const mm=(c=PURPLE,o=.18)=>new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:o,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
+
+// ── Glow sprite texture ─────────────────────────────────────────────────────
+function mkGlow(){
+  const c=document.createElement('canvas');c.width=c.height=128;
+  const x=c.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);
+  g.addColorStop(0,'rgba(230,210,255,1)');
+  g.addColorStop(.12,'rgba(180,120,255,.92)');
+  g.addColorStop(.35,'rgba(120,50,220,.32)');
+  g.addColorStop(1,'rgba(60,10,160,0)');
+  x.fillStyle=g;x.fillRect(0,0,128,128);
+  return new THREE.CanvasTexture(c);
+}
+const glowTex=mkGlow();
+
+// ── Root group ──────────────────────────────────────────────────────────────
+const orb=new THREE.Group();
+orb.position.set(0,.05,0);
+scene.add(orb);
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  1. VOLUMETRIC GLOW SPHERES (faked bloom — BackSide additive)
+// ══════════════════════════════════════════════════════════════════════════════
+const glowSpheres=[];
+[{r:.12,o:.18},{r:.28,o:.14},{r:.52,o:.10},{r:.85,o:.06},{r:1.30,o:.035},{r:1.80,o:.02}].forEach(({r,o})=>{
+  const m=new THREE.Mesh(
+    new THREE.SphereGeometry(r,32,32),
+    new THREE.MeshBasicMaterial({color:0x9944ee,transparent:true,opacity:o,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.BackSide})
+  );
+  glowSpheres.push(m);orb.add(m);
+});
+
+// Central glow sprite
+const coreSprite=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xbb77ff,transparent:true,opacity:.35,blending:THREE.AdditiveBlending,depthWrite:false}));
+coreSprite.scale.set(1.2,1.2,1);orb.add(coreSprite);
+
+// Outer ambient halo
+const outerHalo=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0x8833dd,transparent:true,opacity:.15,blending:THREE.AdditiveBlending,depthWrite:false}));
+outerHalo.scale.set(5.2,5.2,1);orb.add(outerHalo);
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  2. LATTICE CAGE SHELLS
+// ══════════════════════════════════════════════════════════════════════════════
+function lattice(radius,lats,lons,opacity,col){
+  const g=new THREE.Group(),m=lm(col,opacity);
+  for(let i=1;i<lats;i++){
+    const p=i/lats*Math.PI-Math.PI/2,r=Math.cos(p)*radius,y=Math.sin(p)*radius,pts=[];
+    for(let j=0;j<=180;j++){const a=j/180*TAU;pts.push(new THREE.Vector3(Math.cos(a)*r,y,Math.sin(a)*r))}
+    g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),m));
+  }
+  for(let i=0;i<lons;i++){
+    const l=i/lons*TAU,pts=[];
+    for(let j=0;j<=100;j++){const p=j/100*Math.PI-Math.PI/2;pts.push(new THREE.Vector3(Math.cos(p)*Math.cos(l)*radius,Math.sin(p)*radius,Math.cos(p)*Math.sin(l)*radius))}
+    g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),m));
+  }
+  return g;
+}
+const cage1=lattice(1.55,18,30,.10,HOT);
+const cage2=lattice(1.88,13,20,.055,PURPLE);
+cage2.rotation.set(.35,.25,.15);
+orb.add(cage1,cage2);
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  3. ORBITAL RINGS (gyroscope body + prominent structural rings)
+// ══════════════════════════════════════════════════════════════════════════════
+const rings=[];
+
+// 35 random-tilt rings
+for(let i=0;i<35;i++){
+  const r=.35+i*.052+rnd()*.025, tube=.003+rnd()*.008;
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(r,tube,5,240),mm(i<10?HOT:PURPLE,.14+rnd()*.34));
+  ring.rotation.set((rnd()-.5)*2.6,(rnd()-.5)*2.6,rnd()*TAU);
+  ring.userData.speed=(rnd()-.5)*.12;
+  ring.userData.axis=new THREE.Vector3(rnd(),rnd(),rnd()).normalize();
+  rings.push(ring);orb.add(ring);
+}
+
+// 3 PROMINENT tilted rings with glow halos (the key 3D feature)
+const prominentRingData=[
+  {r:1.05,tube:.012,tilt:[1.2,.3,0],spd:-.032,glowR:1.05,glowTube:.08},
+  {r:1.40,tube:.010,tilt:[1.8,.1,.5],spd:.025,glowR:1.40,glowTube:.065},
+  {r:1.78,tube:.008,tilt:[1.0,-.2,.3],spd:-.020,glowR:1.78,glowTube:.055},
+];
+prominentRingData.forEach(({r,tube,tilt,spd,glowR,glowTube})=>{
+  // Solid ring
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(r,tube,8,320),mm(HOT,.40));
+  ring.rotation.set(...tilt);
+  ring.userData.speed=spd;
+  ring.userData.axis=new THREE.Vector3(0,0,1);
+  rings.push(ring);orb.add(ring);
+  // Glow halo around ring
+  const gRing=new THREE.Mesh(new THREE.TorusGeometry(glowR,glowTube,8,320),mm(DEEP,.08));
+  gRing.rotation.set(...tilt);
+  gRing.userData.speed=spd;
+  gRing.userData.axis=new THREE.Vector3(0,0,1);
+  rings.push(gRing);orb.add(gRing);
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  4. CIRCUIT TRACES (3D lines on sphere surface)
+// ══════════════════════════════════════════════════════════════════════════════
+function tangentFrame(p){
+  const n=p.clone().normalize();
+  const up=Math.abs(n.y)>.88?new THREE.Vector3(1,0,0):new THREE.Vector3(0,1,0);
+  const u=new THREE.Vector3().crossVectors(up,n).normalize();
+  const v=new THREE.Vector3().crossVectors(n,u).normalize();
+  return{n,u,v};
+}
+
+const circuits=new THREE.Group();orb.add(circuits);
+for(let i=0;i<500;i++){
+  const rad=.60+rnd()*1.40;
+  const ct=2*rnd()-1,st=Math.sqrt(1-ct*ct),ph=rnd()*TAU;
+  const p=new THREE.Vector3(rad*st*Math.cos(ph),rad*ct,rad*st*Math.sin(ph));
+  const f=tangentFrame(p);
+  const pts=[p.clone()];
+  let a=0,b=0;
+  const steps=2+Math.floor(rnd()*8),scale=.04+rnd()*.10;
+  for(let s=0;s<steps;s++){
+    const d=scale*(.5+rnd()*1.8)*(rnd()<.5?-1:1);
+    if(rnd()<.5)a+=d;else b+=d;
+    pts.push(p.clone().addScaledVector(f.u,a).addScaledVector(f.v,b));
+  }
+  const col=rnd()<.2?BRIGHT:rnd()<.5?HOT:PURPLE;
+  circuits.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),lm(col,.22+rnd()*.52)));
+  // Terminal glow dot
+  if(rnd()<.70){
+    const end=pts[pts.length-1];
+    const dot=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:HOT,transparent:true,opacity:.45+rnd()*.4,blending:THREE.AdditiveBlending,depthWrite:false}));
+    dot.position.copy(end);dot.scale.setScalar(.016+rnd()*.035);
+    circuits.add(dot);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  5. ARCHITECTURAL BOX PANELS (3D wireframe boxes radiating outward)
+// ══════════════════════════════════════════════════════════════════════════════
+const panels=new THREE.Group();orb.add(panels);
+for(let i=0;i<350;i++){
+  const ct=2*rnd()-1,st=Math.sqrt(1-ct*ct),ph=rnd()*TAU;
+  const dir=new THREE.Vector3(st*Math.cos(ph),ct,st*Math.sin(ph));
+  const baseR=.75+rnd()*.72;
+  const depth=.06+rnd()*.38;
+  const w=.05+rnd()*.30,h=.02+rnd()*.14;
+  const col=rnd()<.15?BRIGHT:rnd()<.45?HOT:PURPLE;
+  const edges=new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(w,h,depth)),
+    lm(col,.16+rnd()*.40)
+  );
+  edges.position.copy(dir).multiplyScalar(baseR+depth*.5);
+  edges.lookAt(0,0,0);
+  edges.rotateX(Math.PI/2);
+  edges.rotateZ(rnd()*TAU);
+  panels.add(edges);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  6. ENERGY STREAKS (CatmullRom curves radiating outward)
+// ══════════════════════════════════════════════════════════════════════════════
+const streaks=new THREE.Group();orb.add(streaks);
+for(let i=0;i<200;i++){
+  const ct=2*rnd()-1,st=Math.sqrt(1-ct*ct),ph=rnd()*TAU;
+  const dir=new THREE.Vector3(st*Math.cos(ph),ct,st*Math.sin(ph));
+  const a=.15+rnd()*1.05, b=Math.min(2.25,a+.06+rnd()*.75);
+  const mid=(a+b)*.5;
+  const jitter=new THREE.Vector3((rnd()-.5)*.12,(rnd()-.5)*.12,(rnd()-.5)*.12);
+  const pts=[dir.clone().multiplyScalar(a),dir.clone().multiplyScalar(mid).add(jitter),dir.clone().multiplyScalar(b)];
+  const curve=new THREE.CatmullRomCurve3(pts);
+  const geom=new THREE.BufferGeometry().setFromPoints(curve.getPoints(16));
+  const col=rnd()<.12?HOT:rnd()<.5?PURPLE:DEEP;
+  streaks.add(new THREE.Line(geom,lm(col,.14+rnd()*.36)));
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  7. FLOATING RECTANGLES (tangent to sphere surface)
+// ══════════════════════════════════════════════════════════════════════════════
+const rects=new THREE.Group();orb.add(rects);
+for(let i=0;i<100;i++){
+  const w=.08+rnd()*.42,h=.03+rnd()*.20;
+  const sh=new THREE.Shape();
+  sh.moveTo(-w/2,-h/2);sh.lineTo(w/2,-h/2);sh.lineTo(w/2,h/2);sh.lineTo(-w/2,h/2);sh.closePath();
+  const line=new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.ShapeGeometry(sh)),
+    lm(rnd()<.3?HOT:PURPLE,.08+rnd()*.28)
+  );
+  const r=.72+rnd()*1.30,ct=2*rnd()-1,st=Math.sqrt(1-ct*ct),p=rnd()*TAU;
+  line.position.set(r*st*Math.cos(p),r*ct,r*st*Math.sin(p));
+  line.lookAt(0,0,0);
+  rects.add(line);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  8. PARTICLE SYSTEMS (3 layers — inner cloud, mid shell, outer haze)
+// ══════════════════════════════════════════════════════════════════════════════
+function mkParticles(count,r0,r1,size,opacity){
+  const pos=new Float32Array(count*3),col=new Float32Array(count*3);
+  for(let i=0;i<count;i++){
+    const r=r0+(r1-r0)*Math.pow(rnd(),.6);
+    const ct=2*rnd()-1,st=Math.sqrt(1-ct*ct),p=rnd()*TAU;
+    pos[i*3]=r*st*Math.cos(p);pos[i*3+1]=r*ct;pos[i*3+2]=r*st*Math.sin(p);
+    const h=.5+rnd()*.5;
+    col[i*3]=.50+.42*h;  // R: purple-ish
+    col[i*3+1]=.12+.32*h; // G: low
+    col[i*3+2]=1;          // B: full
+  }
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  g.setAttribute('color',new THREE.BufferAttribute(col,3));
+  return new THREE.Points(g,new THREE.PointsMaterial({
+    map:glowTex,size,vertexColors:true,transparent:true,opacity,
+    blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true
+  }));
+}
+const innerDust=mkParticles(12000,.15,1.20,.035,.85);
+const midDust=mkParticles(18000,.40,1.95,.024,.72);
+const outerDust=mkParticles(10000,1.50,2.30,.020,.45);
+orb.add(innerDust,midDust,outerDust);
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  9. CORE GYROSCOPE (inner ring cluster + nucleus)
+// ══════════════════════════════════════════════════════════════════════════════
+const core=new THREE.Group();orb.add(core);
+
+// Tiny nucleus
+const nucleus=new THREE.Mesh(
+  new THREE.SphereGeometry(.022,24,24),
+  new THREE.MeshBasicMaterial({color:CORE,transparent:true,opacity:.25,blending:THREE.AdditiveBlending,depthWrite:false})
+);
+core.add(nucleus);
+
+// Inner core halo
+const coreHalo=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xbb77ff,transparent:true,opacity:.18,blending:THREE.AdditiveBlending,depthWrite:false}));
+coreHalo.scale.set(.35,.35,1);core.add(coreHalo);
+
+// 12 gyroscope rings
+for(let i=0;i<12;i++){
+  const r=.10+i*.038;
+  const ring=new THREE.Mesh(
+    new THREE.TorusGeometry(r,.006+(i<4?.004:0),6,140),
+    mm(i<5?BRIGHT:HOT,.38)
+  );
+  ring.rotation.set(rnd()*Math.PI,rnd()*Math.PI,rnd()*TAU);
+  ring.userData.speed=(rnd()-.5)*1.4;
+  ring.userData.axis=new THREE.Vector3(rnd(),rnd(),rnd()).normalize();
+  rings.push(ring);
+  core.add(ring);
+}
+
+// Equatorial ring
+const equator=new THREE.Mesh(new THREE.TorusGeometry(.62,.014,8,260),mm(0xbb77ff,.14));
+equator.rotation.x=Math.PI/2;core.add(equator);
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  INTERACTION
+// ══════════════════════════════════════════════════════════════════════════════
+let targetX=0,targetY=0,currentX=0,currentY=0,drag=false,lastX=0,lastY=0;
+let camDist=5.8;
+
+addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY});
+addEventListener('pointerup',()=>drag=false);
+addEventListener('pointermove',e=>{
+  if(!drag)return;
+  targetY+=(e.clientX-lastX)*.004;
+  targetX+=(e.clientY-lastY)*.004;
+  lastX=e.clientX;lastY=e.clientY;
+});
+addEventListener('wheel',e=>{camDist=Math.max(3.2,Math.min(9,camDist+e.deltaY*.004))},{passive:true});
+
+// Click pulse
+let clickPulse=0;
+addEventListener('click',()=>{clickPulse=1});
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  ANIMATION LOOP
+// ══════════════════════════════════════════════════════════════════════════════
+const clock=new THREE.Clock();
+
+function tick(){
+  requestAnimationFrame(tick);
+  const dt=Math.min(clock.getDelta(),.04), t=clock.elapsedTime;
+
+  updateTalkAmplitude();
+  const amp=window.TALK.smoothAmp;
+
+  // Click pulse decay
+  clickPulse*=.92;
+
+  // Auto-rotate + drag
+  if(!drag) targetY+=dt*.04;
+  currentX+=(targetX-currentX)*.04;
+  currentY+=(targetY-currentY)*.04;
+  orb.rotation.x=-.04+currentX;
+  orb.rotation.y=currentY;
+
+  // Camera zoom
+  camera.position.z+=(camDist-camera.position.z)*.06;
+
+  // Ring speed multiplier (talk + click)
+  const ringMult=1+amp*3.5+clickPulse*4;
+  rings.forEach(r=>r.rotateOnAxis(r.userData.axis,r.userData.speed*dt*ringMult));
+
+  // Group rotations
+  circuits.rotation.y+=dt*(.014+amp*.06);
+  streaks.rotation.x-=dt*(.007+amp*.025);
+  rects.rotation.y-=dt*(.010+amp*.04);
+  panels.rotation.y+=dt*(.005+amp*.02);
+  panels.rotation.x-=dt*(.003+amp*.015);
+
+  // Core reactivity
+  const basePulse=1+Math.sin(t*2.8)*.03;
+  nucleus.scale.setScalar(basePulse+amp*.4+clickPulse*.3);
+
+  // Core halo blooms during speech
+  const chs=.35+amp*2.0+clickPulse*1.2;
+  coreHalo.scale.set(chs,chs,1);
+  coreHalo.material.opacity=.18+amp*.70+clickPulse*.3;
+
+  // Core sprite
+  const css=1.2+amp*1.0+clickPulse*.6;
+  coreSprite.scale.set(css,css,1);
+  coreSprite.material.opacity=.35+amp*.35+clickPulse*.2;
+
+  // Outer halo breathes
+  const ohs=5.2+amp*1.8+clickPulse*1.5;
+  outerHalo.scale.set(ohs,ohs,1);
+  outerHalo.material.opacity=.15+amp*.18+clickPulse*.08;
+
+  // Volumetric glow spheres react
+  glowSpheres.forEach((s,i)=>{
+    const baseO=[.18,.14,.10,.06,.035,.02][i];
+    s.material.opacity=baseO+amp*baseO*3+clickPulse*baseO*2;
+    s.scale.setScalar(1+amp*.12+clickPulse*.08);
+  });
+
+  // Orb scale breathes
+  orb.scale.setScalar(1+amp*.07+clickPulse*.05);
+
+  // Particles react
+  innerDust.material.opacity=.85+amp*.15;
+  innerDust.material.size=.035+amp*.025;
+  midDust.material.opacity=.72+amp*.20;
+  midDust.material.size=.024+amp*.016;
+  outerDust.material.opacity=.45+amp*.25;
+  outerDust.material.size=.020+amp*.014;
+
+  // Slow particle cloud rotation for depth feel
+  innerDust.rotation.y+=dt*.008;
+  midDust.rotation.y-=dt*.005;
+  outerDust.rotation.y+=dt*.003;
+
+  renderer.render(scene,camera);
+}
+tick();
+
+addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+})();
+</script>
+</body></html>

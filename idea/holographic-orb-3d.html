@@ -1,0 +1,561 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Holographic 3D Sphere - Jarvis UI</title>
+<style>
+*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden}body{background:#080b15}
+.room{position:fixed;inset:0;overflow:hidden;background:radial-gradient(circle at 53% 48%,rgba(63,54,56,.18),transparent 42%),linear-gradient(180deg,#090c16 0 68%,#101522 68% 100%)}
+.back-wall{position:absolute;inset:0;background:linear-gradient(90deg,transparent 0 4.8%,rgba(68,75,104,.58) 4.9% 6.2%,rgba(19,23,39,.9) 6.3% 15.4%,rgba(71,76,101,.22) 15.5% 16%,transparent 16.1%),linear-gradient(90deg,transparent 0 20.2%,rgba(30,34,49,.48) 20.3% 21%,transparent 21.1% 80%,rgba(22,31,49,.58) 80.1% 82%,transparent 82.1%),linear-gradient(180deg,transparent 0 8%,rgba(45,54,77,.28) 8.1% 8.6%,transparent 8.7% 66%,rgba(67,61,64,.18) 66.1% 66.6%,transparent 66.7%)}
+.left-column{position:absolute;left:5.4%;top:0;width:15.8%;height:100%;background:linear-gradient(90deg,rgba(61,66,91,.82),rgba(29,33,49,.92) 26%,rgba(36,39,56,.82) 78%,rgba(9,12,22,.96));box-shadow:inset 2px 0 rgba(103,111,148,.2),inset -2px 0 rgba(0,0,0,.55),14px 0 30px rgba(0,0,0,.24)}.left-column:before{content:"";position:absolute;left:48%;top:0;bottom:0;width:2px;background:rgba(95,101,132,.2)}.left-column:after{content:"";position:absolute;left:-36%;right:0;top:8%;height:1px;background:rgba(107,114,148,.25);box-shadow:0 112px rgba(107,114,148,.14),0 226px rgba(107,114,148,.12),0 452px rgba(107,114,148,.12)}
+.left-bay{position:absolute;left:0;top:8%;width:5.4%;height:60%;background:linear-gradient(180deg,rgba(42,58,82,.72),rgba(10,13,23,.9) 19% 77%,rgba(29,33,48,.7));border-right:1px solid rgba(91,102,137,.24)}.left-bay:before{content:"";position:absolute;left:0;right:0;top:11%;height:10%;border-top:4px solid rgba(5,7,13,.8);border-bottom:4px solid rgba(5,7,13,.8)}
+.beam{position:absolute;z-index:4;top:-2%;right:-8%;width:73%;height:28%;transform:rotate(20.5deg);transform-origin:100% 0;background:linear-gradient(180deg,rgba(100,103,130,.94),rgba(67,72,101,.96) 22%,rgba(37,44,69,.98) 75%,rgba(15,23,42,.98));border-bottom:7px solid rgba(24,52,86,.82);box-shadow:0 11px 20px rgba(0,0,0,.65),inset 0 -2px rgba(116,139,185,.28)}.beam:before,.beam:after{content:"";position:absolute;left:5%;right:3%;height:4px;background:rgba(170,171,190,.3);box-shadow:0 2px rgba(15,20,37,.8)}.beam:before{top:23%}.beam:after{top:66%}
+.right-wall{position:absolute;right:0;top:18%;bottom:32%;width:24%;background:linear-gradient(90deg,rgba(10,14,24,.15),rgba(6,9,17,.92));border-left:1px solid rgba(45,73,112,.15)}.ceiling-lights{position:absolute;z-index:1;right:7%;top:22%;width:17%;height:18%;opacity:.48;transform:skewX(-24deg);background:repeating-linear-gradient(180deg,transparent 0 22px,rgba(180,140,93,.75) 23px 25px,transparent 26px 39px);clip-path:polygon(33% 0,100% 0,70% 100%,0 100%)}
+.stairs{position:absolute;right:-2%;top:64%;width:30%;height:24%;opacity:.62;background:repeating-linear-gradient(180deg,transparent 0 17px,rgba(93,69,70,.55) 18px 23px);transform:skewX(-15deg);border-top:2px solid rgba(99,79,81,.38)}.stairs:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(17,19,29,.35) 38%,rgba(4,7,14,.9))}
+.floor{position:absolute;left:0;right:0;bottom:0;height:32%;overflow:hidden;background:linear-gradient(180deg,rgba(14,17,27,.6),rgba(14,20,34,.98));border-top:1px solid rgba(90,82,88,.18)}.floor:before{content:"";position:absolute;inset:-20% -30% -80%;transform:perspective(500px) rotateX(64deg);transform-origin:50% 0;background:repeating-linear-gradient(90deg,transparent 0 92px,rgba(83,87,107,.18) 93px 95px),repeating-linear-gradient(180deg,transparent 0 70px,rgba(91,88,101,.16) 71px 73px)}.floor:after{content:"";position:absolute;left:18%;right:22%;top:0;height:9px;background:linear-gradient(90deg,transparent,rgba(119,103,101,.35),transparent);transform:skewX(-18deg)}
+.vignette{position:absolute;z-index:8;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 49%,transparent 35%,rgba(3,5,11,.14) 65%,rgba(2,4,9,.55) 100%)}
+
+canvas#c3d{position:absolute;z-index:3;inset:0;display:block;width:100%;height:100%}
+
+#ui{position:fixed;z-index:20;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;background:rgba(8,12,24,.75);padding:8px 16px;border-radius:4px;border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px)}
+.btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#eee;font-family:'Courier New',monospace;font-size:10px;letter-spacing:1.5px;padding:6px 14px;cursor:pointer;text-transform:uppercase;transition:all .25s;border-radius:2px}
+.btn:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5)}
+.btn.active{background:rgba(255,170,0,.3);border-color:#ffaa00;color:#fff;box-shadow:0 0 12px rgba(255,170,0,.5)}
+.btn.active.purple-mode{background:rgba(180,60,255,.35);border-color:#cc88ff;box-shadow:0 0 12px rgba(180,60,255,.5)}
+.lbl{color:rgba(255,255,255,.5);font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px}
+#amp-bar{width:70px;height:5px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+#amp-fill{height:100%;width:0%;background:linear-gradient(90deg,#ff6600,#ffcc00);border-radius:2px;transition:width .05s}
+.purple-theme #amp-fill{background:linear-gradient(90deg,#7722dd,#cc88ff);box-shadow:0 0 6px rgba(180,60,255,.6)}
+</style></head>
+<body>
+<main class="room">
+  <div class="back-wall"></div><div class="left-bay"></div><div class="left-column"></div>
+  <div class="right-wall"></div><div class="ceiling-lights"></div><div class="stairs"></div>
+  <div class="floor"></div><div class="beam"></div><div class="vignette"></div>
+  <canvas id="c3d"></canvas>
+  <div id="ui">
+    <span class="lbl">THEME</span>
+    <button id="btn-theme" class="btn">GOLD (ORIGINAL)</button>
+    <div style="width:1px;height:16px;background:rgba(255,255,255,.15);margin:0 4px"></div>
+    <span class="lbl">VOICE</span>
+    <button id="btn-mic" class="btn">MIC · M</button>
+    <button id="btn-sim" class="btn">SIM · T</button>
+    <div id="amp-bar"><div id="amp-fill"></div></div>
+  </div>
+</main>
+
+<!-- Load precomputed 3D Point Cloud extracted from reference image -->
+<script src="../holo_data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+(()=>{'use strict';
+
+// ── Global Talk State ───────────────────────────────────────────────────────
+window.TALK = {
+  amplitude: 0, smoothAmp: 0, active: false, mode: 'none',
+  audioCtx: null, analyser: null, dataArray: null, stream: null, simPhase: 0
+};
+
+// ── Theme State: 'gold' or 'purple' ─────────────────────────────────────────
+let currentTheme = 'gold'; // defaults to reference authentic gold! Can switch to purple!
+
+async function startMic(){
+  try{
+    const T = window.TALK;
+    if(T.mode==='sim') toggleSim();
+    T.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    T.stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    const src = T.audioCtx.createMediaStreamSource(T.stream);
+    T.analyser = T.audioCtx.createAnalyser();
+    T.analyser.fftSize = 512;
+    T.analyser.smoothingTimeConstant = 0.72;
+    src.connect(T.analyser);
+    T.dataArray = new Uint8Array(T.analyser.frequencyBinCount);
+    T.mode = 'mic'; T.active = true;
+    updateUIBtns();
+  }catch(e){console.warn('Mic unavailable:', e)}
+}
+
+function stopMic(){
+  const T = window.TALK;
+  if(T.stream) T.stream.getTracks().forEach(t=>t.stop());
+  if(T.audioCtx && T.audioCtx.state!=='closed') T.audioCtx.close().catch(()=>{});
+  T.stream = null; T.audioCtx = null; T.analyser = null;
+  T.mode = 'none'; T.active = false; T.amplitude = 0; T.smoothAmp = 0;
+  updateUIBtns();
+}
+
+function toggleSim(){
+  const T = window.TALK;
+  if(T.mode==='mic') stopMic();
+  if(T.mode==='sim'){
+    T.mode = 'none'; T.active = false; T.amplitude = 0; T.smoothAmp = 0;
+  }else{
+    T.mode = 'sim'; T.active = true; T.simPhase = Math.random()*100;
+  }
+  updateUIBtns();
+}
+
+function updateUIBtns(){
+  const T = window.TALK;
+  const bMic = document.getElementById('btn-mic');
+  const bSim = document.getElementById('btn-sim');
+  bMic.className = 'btn' + (T.mode==='mic'?' active':'') + (currentTheme==='purple'?' purple-mode':'');
+  bSim.className = 'btn' + (T.mode==='sim'?' active':'') + (currentTheme==='purple'?' purple-mode':'');
+}
+
+function updateTalkAmplitude(){
+  const T = window.TALK;
+  if(T.mode==='mic' && T.analyser){
+    T.analyser.getByteFrequencyData(T.dataArray);
+    let sum = 0;
+    for(let i=0; i<T.dataArray.length; i++) sum += T.dataArray[i];
+    T.amplitude = Math.min(1, sum / T.dataArray.length / 120);
+  }else if(T.mode==='sim'){
+    T.simPhase += 0.02;
+    const p = T.simPhase;
+    const syl = Math.sin(p*9.2)*.5+.5, w = Math.sin(p*2.6)*.5+.5, br = Math.sin(p*.7)*.5+.5;
+    const burst = Math.pow(Math.sin(p*15.3)*.5+.5, 3), pause = Math.sin(p*.42)>-.18?1:0;
+    T.amplitude = Math.min(1, (syl*.38 + w*.24 + burst*.22 + br*.16)*pause);
+  }else{
+    T.amplitude *= 0.88;
+  }
+  T.smoothAmp += (T.amplitude - T.smoothAmp)*0.22;
+  const fill = document.getElementById('amp-fill');
+  if(fill) fill.style.width = (T.smoothAmp*100)+'%';
+}
+
+// ── Three.js Initialization ─────────────────────────────────────────────────
+const canvas = document.getElementById('c3d');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true, powerPreference:'high-performance'});
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(0, 0);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(0, 0.05, 5.6);
+
+// Main orb group
+const orb = new THREE.Group();
+orb.position.set(-0.04, 0.02, 0);
+scene.add(orb);
+
+// ── Texture Loader ──────────────────────────────────────────────────────────
+const texLoader = new THREE.TextureLoader();
+const textures = {
+  gold: {
+    full: texLoader.load('../tex_gold_full.png'),
+    ring: texLoader.load('../tex_gold_ring.png'),
+    core: texLoader.load('../tex_gold_core.png'),
+    outer: texLoader.load('../tex_gold_outer.png'),
+  },
+  purple: {
+    full: texLoader.load('../tex_purple_full.png'),
+    ring: texLoader.load('../tex_purple_ring.png'),
+    core: texLoader.load('../tex_purple_core.png'),
+    outer: texLoader.load('../tex_purple_outer.png'),
+  }
+};
+
+// Radial glow sprite texture for core & particles
+function makeGlowSprite(){
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const ctx = c.getContext('2d'), g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, 'rgba(255,255,255,1)');
+  g.addColorStop(0.12, 'rgba(255,230,180,0.95)');
+  g.addColorStop(0.38, 'rgba(255,140,20,0.4)');
+  g.addColorStop(1, 'rgba(255,80,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,128,128);
+  return new THREE.CanvasTexture(c);
+}
+const glowTex = makeGlowSprite();
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  1. EXACT REFERENCE 3D POINT CLOUD (45,000 points from reference pixels)
+// ══════════════════════════════════════════════════════════════════════════════
+let pointCloud = null;
+let pointColors = null;
+let pointPos = null;
+let pointIntensities = null;
+
+if(window.HOLO_BIN_B64){
+  try{
+    const binStr = atob(window.HOLO_BIN_B64);
+    const bytes = new Uint8Array(binStr.length);
+    for(let i=0; i<binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+    const f32 = new Float32Array(bytes.buffer);
+    const N = f32.length / 5;
+
+    const positions = new Float32Array(N * 3);
+    const colors = new Float32Array(N * 3);
+    pointIntensities = new Float32Array(N);
+
+    for(let i=0; i<N; i++){
+      positions[i*3]     = f32[i*5];
+      positions[i*3 + 1] = f32[i*5 + 1];
+      positions[i*3 + 2] = f32[i*5 + 2];
+      const intensity = f32[i*5 + 3];
+      pointIntensities[i] = intensity;
+
+      // Initial color in gold theme:
+      colors[i*3]     = 1.0;
+      colors[i*3 + 1] = 0.55 + 0.42 * intensity;
+      colors[i*3 + 2] = 0.05 + 0.35 * (intensity * intensity);
+    }
+
+    pointPos = positions;
+    pointColors = colors;
+
+    const pGeom = new THREE.BufferGeometry();
+    pGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    pGeom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const pMat = new THREE.PointsMaterial({
+      map: glowTex,
+      size: 0.038,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.92,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      sizeAttenuation: true
+    });
+
+    pointCloud = new THREE.Points(pGeom, pMat);
+    orb.add(pointCloud);
+  }catch(e){
+    console.error('Failed to load point cloud data:', e);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  2. REFERENCE STRUCTURE PLANES & RINGS (Tilted at ~45° as in image)
+// ══════════════════════════════════════════════════════════════════════════════
+const planesGroup = new THREE.Group();
+orb.add(planesGroup);
+
+const planeMatFull = new THREE.MeshBasicMaterial({
+  map: textures.gold.full,
+  transparent: true,
+  opacity: 0.88,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  side: THREE.DoubleSide
+});
+const planeFull = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 4.2), planeMatFull);
+planeFull.position.set(0, 0, 0.05);
+planesGroup.add(planeFull);
+
+// Prominent front orbital ring plane - angled like the reference
+const planeMatRing = new THREE.MeshBasicMaterial({
+  map: textures.gold.ring,
+  transparent: true,
+  opacity: 0.95,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  side: THREE.DoubleSide
+});
+const planeRing = new THREE.Mesh(new THREE.PlaneGeometry(4.15, 4.15), planeMatRing);
+planeRing.position.set(0, 0, 0.22);
+planeRing.rotation.set(0.24, -0.28, 0.42); // match the elliptical sweep angle in reference
+planesGroup.add(planeRing);
+
+// Back orbital ring plane for complete depth illusion
+const planeRingBack = new THREE.Mesh(new THREE.PlaneGeometry(4.15, 4.15), planeMatRing);
+planeRingBack.position.set(0, 0, -0.22);
+planeRingBack.rotation.set(-0.24, 0.28, -0.42);
+planesGroup.add(planeRingBack);
+
+// Core slice plane
+const planeMatCore = new THREE.MeshBasicMaterial({
+  map: textures.gold.core,
+  transparent: true,
+  opacity: 0.85,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  side: THREE.DoubleSide
+});
+const planeCore = new THREE.Mesh(new THREE.PlaneGeometry(4.0, 4.0), planeMatCore);
+planesGroup.add(planeCore);
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  3. TRUE 3D TORUS RINGS & STEPPED PANELS MATCHING REFERENCE GEOMETRY
+// ══════════════════════════════════════════════════════════════════════════════
+const rings = [];
+const goldThemeColors = {
+  main: 0xffaa00, hot: 0xffdd55, deep: 0xff7700, bright: 0xfff0aa, core: 0xffbb33
+};
+const purpleThemeColors = {
+  main: 0xaa44ff, hot: 0xdd88ff, deep: 0x7722dd, bright: 0xf0c0ff, core: 0xbb77ff
+};
+
+function getCols(){ return currentTheme === 'purple' ? purpleThemeColors : goldThemeColors; }
+
+// Prominent thick tilted ring matching the reference arc
+const mainRingGeom = new THREE.TorusGeometry(1.35, 0.022, 8, 360);
+const mainRingMat = new THREE.MeshBasicMaterial({
+  color: getCols().hot, transparent: true, opacity: 0.82,
+  blending: THREE.AdditiveBlending, depthWrite: false
+});
+const mainRing = new THREE.Mesh(mainRingGeom, mainRingMat);
+mainRing.rotation.set(Math.PI/2 - 0.25, -0.32, 0.35);
+mainRing.userData = { axis: new THREE.Vector3(0.3, 1, 0.2).normalize(), speed: 0.035 };
+rings.push(mainRing);
+orb.add(mainRing);
+
+// Secondary tilted structural rings
+const ringConfigs = [
+  { r: 0.72, tube: 0.012, rot: [1.3, -0.2, 0.5], spd: 0.06 },
+  { r: 1.05, tube: 0.014, rot: [1.7, 0.3, -0.2], spd: -0.045 },
+  { r: 1.68, tube: 0.015, rot: [1.1, -0.4, 0.8], spd: 0.03 },
+  { r: 1.95, tube: 0.010, rot: [1.5, 0.1, 0.1], spd: -0.025 }
+];
+ringConfigs.forEach(cfg => {
+  const rGeom = new THREE.TorusGeometry(cfg.r, cfg.tube, 6, 240);
+  const rMat = new THREE.MeshBasicMaterial({
+    color: getCols().main, transparent: true, opacity: 0.65,
+    blending: THREE.AdditiveBlending, depthWrite: false
+  });
+  const m = new THREE.Mesh(rGeom, rMat);
+  m.rotation.set(...cfg.rot);
+  m.userData = { axis: new THREE.Vector3(Math.random(), Math.random(), Math.random()).normalize(), speed: cfg.spd };
+  rings.push(m);
+  orb.add(m);
+});
+
+// Inner gyroscope rings (9 spinning rings in core)
+const gyroGroup = new THREE.Group();
+orb.add(gyroGroup);
+for(let i=0; i<9; i++){
+  const r = 0.12 + i * 0.038;
+  const gGeom = new THREE.TorusGeometry(r, 0.006, 6, 120);
+  const gMat = new THREE.MeshBasicMaterial({
+    color: i < 3 ? getCols().bright : getCols().hot,
+    transparent: true, opacity: 0.55,
+    blending: THREE.AdditiveBlending, depthWrite: false
+  });
+  const gMesh = new THREE.Mesh(gGeom, gMat);
+  gMesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+  gMesh.userData = { axis: new THREE.Vector3(Math.random(), Math.random(), Math.random()).normalize(), speed: (Math.random()-0.5)*1.2 };
+  rings.push(gMesh);
+  gyroGroup.add(gMesh);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  4. STEPPED PANELS (The distinct architectural blocks on the perimeter)
+// ══════════════════════════════════════════════════════════════════════════════
+const stepGroup = new THREE.Group();
+orb.add(stepGroup);
+// In the reference, there are distinct rectangular step frames at the bottom-left and perimeter
+for(let i=0; i<160; i++){
+  const angle = (i / 160) * Math.PI * 2;
+  const rad = 1.45 + Math.sin(angle * 4.0) * 0.35 + Math.random() * 0.3;
+  const w = 0.12 + Math.random() * 0.28, h = 0.04 + Math.random() * 0.12, d = 0.08 + Math.random() * 0.24;
+  const boxGeom = new THREE.EdgesGeometry(new THREE.BoxGeometry(w, h, d));
+  const boxMat = new THREE.LineBasicMaterial({
+    color: Math.random() < 0.3 ? getCols().bright : getCols().main,
+    transparent: true, opacity: 0.45,
+    blending: THREE.AdditiveBlending, depthWrite: false
+  });
+  const stepMesh = new THREE.LineSegments(boxGeom, boxMat);
+  stepMesh.position.set(Math.cos(angle) * rad, Math.sin(angle) * rad, (Math.random() - 0.5) * 0.6);
+  stepMesh.lookAt(0, 0, 0);
+  stepGroup.add(stepMesh);
+}
+
+// Core center glow sprite
+const coreSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+  map: glowTex, color: getCols().bright, transparent: true, opacity: 0.45,
+  blending: THREE.AdditiveBlending, depthWrite: false
+}));
+coreSprite.scale.set(1.4, 1.4, 1);
+orb.add(coreSprite);
+
+// Outer ambient halo
+const outerHalo = new THREE.Sprite(new THREE.SpriteMaterial({
+  map: glowTex, color: getCols().deep, transparent: true, opacity: 0.2,
+  blending: THREE.AdditiveBlending, depthWrite: false
+}));
+outerHalo.scale.set(5.2, 5.2, 1);
+orb.add(outerHalo);
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  5. THEME SWITCHING (GOLD <-> PURPLE)
+// ══════════════════════════════════════════════════════════════════════════════
+function applyTheme(theme){
+  currentTheme = theme;
+  const cols = getCols();
+  const texSet = textures[theme];
+
+  // Update plane maps
+  planeMatFull.map = texSet.full; planeMatFull.needsUpdate = true;
+  planeMatRing.map = texSet.ring; planeMatRing.needsUpdate = true;
+  planeMatCore.map = texSet.core; planeMatCore.needsUpdate = true;
+
+  // Update 3D point colors:
+  if(pointColors && pointIntensities){
+    const N = pointIntensities.length;
+    for(let i=0; i<N; i++){
+      const int = pointIntensities[i];
+      if(theme === 'purple'){
+        pointColors[i*3]     = 0.65 + 0.32 * int;
+        pointColors[i*3 + 1] = 0.15 + 0.35 * (int * int);
+        pointColors[i*3 + 2] = 1.0;
+      }else{
+        pointColors[i*3]     = 1.0;
+        pointColors[i*3 + 1] = 0.55 + 0.42 * int;
+        pointColors[i*3 + 2] = 0.05 + 0.35 * (int * int);
+      }
+    }
+    pointCloud.geometry.attributes.color.needsUpdate = true;
+  }
+
+  // Update ring colors:
+  mainRingMat.color.setHex(cols.hot);
+  rings.forEach((r, idx) => {
+    if(r.material) r.material.color.setHex(idx < 3 ? cols.bright : cols.main);
+  });
+  stepGroup.children.forEach(c => {
+    if(c.material) c.material.color.setHex(cols.main);
+  });
+
+  // Update glow sprites:
+  coreSprite.material.color.setHex(cols.bright);
+  outerHalo.material.color.setHex(cols.deep);
+
+  // Update UI button label:
+  const btnTheme = document.getElementById('btn-theme');
+  btnTheme.textContent = theme === 'gold' ? 'GOLD (ORIGINAL)' : 'QUIRKY PURPLE';
+  if(theme === 'purple'){
+    btnTheme.classList.add('purple-mode', 'active');
+    document.body.classList.add('purple-theme');
+  }else{
+    btnTheme.classList.remove('purple-mode', 'active');
+    document.body.classList.remove('purple-theme');
+  }
+  updateUIBtns();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  6. INTERACTION (DRAG TO ROTATE IN 3D, SCROLL TO ZOOM, CLICK TO PULSE)
+// ══════════════════════════════════════════════════════════════════════════════
+let targetX = 0, targetY = 0, currentX = 0, currentY = 0, drag = false, lastX = 0, lastY = 0;
+let camDist = 5.6;
+let clickShock = 0;
+
+addEventListener('pointerdown', e => {
+  if(e.target.closest('#ui')) return;
+  drag = true; lastX = e.clientX; lastY = e.clientY;
+});
+addEventListener('pointerup', () => drag = false);
+addEventListener('pointermove', e => {
+  if(!drag) return;
+  targetY += (e.clientX - lastX) * 0.0035;
+  targetX += (e.clientY - lastY) * 0.0035;
+  lastX = e.clientX; lastY = e.clientY;
+});
+addEventListener('wheel', e => {
+  camDist = Math.max(3.2, Math.min(8.5, camDist + e.deltaY * 0.0035));
+}, {passive:true});
+addEventListener('click', e => {
+  if(!e.target.closest('#ui')) clickShock = 1.0;
+});
+
+// UI Event handlers
+document.getElementById('btn-theme').addEventListener('click', () => {
+  applyTheme(currentTheme === 'gold' ? 'purple' : 'gold');
+});
+document.getElementById('btn-mic').addEventListener('click', () => {
+  if(window.TALK.mode==='mic') stopMic(); else startMic();
+});
+document.getElementById('btn-sim').addEventListener('click', toggleSim);
+
+document.addEventListener('keydown', e => {
+  if(e.repeat) return;
+  if(e.key === 't' || e.key === 'T') toggleSim();
+  if(e.key === 'm' || e.key === 'M'){
+    if(window.TALK.mode==='mic') stopMic(); else startMic();
+  }
+  if(e.key === 'c' || e.key === 'C'){
+    applyTheme(currentTheme === 'gold' ? 'purple' : 'gold');
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  7. ANIMATION TICK
+// ══════════════════════════════════════════════════════════════════════════════
+const clock = new THREE.Clock();
+
+function tick(){
+  requestAnimationFrame(tick);
+  const dt = Math.min(clock.getDelta(), 0.04);
+  const t = clock.elapsedTime;
+
+  updateTalkAmplitude();
+  const amp = window.TALK.smoothAmp;
+  clickShock *= 0.93;
+
+  // Gentle auto-rotation
+  if(!drag) targetY += dt * 0.035;
+  currentX += (targetX - currentX) * 0.045;
+  currentY += (targetY - currentY) * 0.045;
+  orb.rotation.x = -0.04 + currentX;
+  orb.rotation.y = currentY;
+
+  // Parallax on internal depth slices
+  planeRing.rotation.z = 0.42 + Math.sin(t * 0.8) * 0.05;
+  planeRingBack.rotation.z = -0.42 - Math.sin(t * 0.8) * 0.05;
+
+  // Camera smooth zoom
+  camera.position.z += (camDist - camera.position.z) * 0.06;
+
+  // Rings spin (accelerated when talking)
+  const ringSpeedMult = 1.0 + amp * 3.2 + clickShock * 4.0;
+  rings.forEach(r => {
+    if(r.userData && r.userData.axis){
+      r.rotateOnAxis(r.userData.axis, r.userData.speed * dt * ringSpeedMult);
+    }
+  });
+
+  // Step architectural blocks slowly drift
+  stepGroup.rotation.y += dt * 0.015 * ringSpeedMult;
+
+  // Talk reactive scales & glows
+  const talkPulse = 1.0 + amp * 0.06 + clickShock * 0.08;
+  orb.scale.setScalar(talkPulse);
+
+  // Core flare bloom
+  const coreScale = 1.4 + amp * 1.8 + clickShock * 1.5;
+  coreSprite.scale.set(coreScale, coreScale, 1);
+  coreSprite.material.opacity = 0.45 + amp * 0.5 + clickShock * 0.35;
+
+  // Outer halo breathing
+  const haloScale = 5.2 + amp * 1.2 + clickShock * 1.0;
+  outerHalo.scale.set(haloScale, haloScale, 1);
+  outerHalo.material.opacity = 0.2 + amp * 0.2 + clickShock * 0.15;
+
+  // Point cloud brightness boost when talking
+  if(pointCloud){
+    pointCloud.material.size = 0.038 + amp * 0.022 + clickShock * 0.025;
+    pointCloud.material.opacity = 0.92 + amp * 0.08;
+  }
+
+  // Planes intensity boost
+  planeMatFull.opacity = 0.88 + amp * 0.12;
+  planeMatRing.opacity = 0.95 + amp * 0.05;
+
+  renderer.render(scene, camera);
+}
+tick();
+
+addEventListener('resize', ()=>{
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+// Initialize with gold (authentic reference) or purple
+applyTheme('gold');
+
+})();
+</script>
+</body></html>

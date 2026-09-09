@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JARVIS Holographic Orb - Versions Gallery</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#080b15;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding:40px 20px;min-height:100vh}
+  .container{max-width:960px;margin:0 auto}
+  h1{font-size:28px;letter-spacing:2px;text-transform:uppercase;color:#ffaa00;margin-bottom:8px;font-family:'Courier New',monospace}
+  p.sub{color:#94a3b8;font-size:14px;margin-bottom:32px;letter-spacing:1px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+  .card{background:rgba(18,24,38,0.7);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .2s,border-color .2s;backdrop-filter:blur(10px)}
+  .card:hover{transform:translateY(-3px);border-color:rgba(255,170,0,0.4)}
+  .card.featured{border-color:rgba(255,170,0,0.5);background:radial-gradient(circle at top right,rgba(255,170,0,0.1),transparent 70%),rgba(18,24,38,0.85)}
+  .tag{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;padding:3px 8px;border-radius:3px;margin-bottom:12px;font-family:'Courier New',monospace;font-weight:bold}
+  .tag-gold{background:rgba(255,170,0,0.15);color:#ffbe33;border:1px solid rgba(255,170,0,0.3)}
+  .tag-purple{background:rgba(168,85,247,0.15);color:#c084fc;border:1px solid rgba(168,85,247,0.3)}
+  .tag-both{background:linear-gradient(90deg,rgba(255,170,0,0.15),rgba(168,85,247,0.15));color:#f8fafc;border:1px solid rgba(255,255,255,0.2)}
+  h2{font-size:18px;margin-bottom:8px;color:#f8fafc}
+  p.desc{color:#94a3b8;font-size:13px;line-height:1.5;margin-bottom:20px;flex-grow:1}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;text-decoration:none;border-radius:4px;font-size:12px;font-family:'Courier New',monospace;letter-spacing:1.5px;text-transform:uppercase;transition:all .2s}
+  .btn:hover{background:rgba(255,170,0,0.25);border-color:#ffaa00;color:#fff}
+  .btn-purple:hover{background:rgba(168,85,247,0.3);border-color:#c084fc}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Jarvis Hologram Archives</h1>
+  <p class="sub">All interactive holographic orb versions created during development:</p>
+
+  <div class="grid">
+    <!-- 3D Reference Match (Latest) -->
+    <div class="card featured">
+      <div>
+        <span class="tag tag-both">★ Latest / Dual Theme</span>
+        <h2>Holographic 3D (Reference Match)</h2>
+        <p class="desc">3D point cloud extracted directly from the reference image pixels. Real tilted ring geometry, depth parallax planes, voice talk mode (mic + sim), and live theme toggle between Gold and Quirky Purple.</p>
+      </div>
+      <a class="btn" href="holographic-orb-3d.html" target="_blank">Launch 3D Orb →</a>
+    </div>
+
+    <!-- 3D Purple Procedural -->
+    <div class="card">
+      <div>
+        <span class="tag tag-purple">3D Procedural · Purple</span>
+        <h2>Holographic 3D (Purple Engine)</h2>
+        <p class="desc">100% Three.js procedural implementation without 2D canvas overlay. 350 box wireframes, volumetric BackSide glow spheres, 3 prominent tori, and talk mode.</p>
+      </div>
+      <a class="btn btn-purple" href="holographic-orb-3d-purple.html" target="_blank">Launch 3D Purple →</a>
+    </div>
+
+    <!-- v3 Talk (Amber) -->
+    <div class="card">
+      <div>
+        <span class="tag tag-gold">2D/3D Hybrid · Amber</span>
+        <h2>Holographic v3 Talk (Amber)</h2>
+        <p class="desc">The hybrid architectural version with Web Audio microphone input, voice waveform HUD, and speech-pulsing rings in the original gold/amber palette.</p>
+      </div>
+      <a class="btn" href="holographic-orb-v3-talk-amber.html" target="_blank">Launch v3 Amber Talk →</a>
+    </div>
+
+    <!-- v3 Talk (Purple) -->
+    <div class="card">
+      <div>
+        <span class="tag tag-purple">2D/3D Hybrid · Purple</span>
+        <h2>Holographic v3 Talk (Purple)</h2>
+        <p class="desc">The hybrid architectural version recolored to vibrant quirky purple with speech simulation, mic reactivity, and animated pulse waves.</p>
+      </div>
+      <a class="btn btn-purple" href="holographic-orb-purple.html" target="_blank">Launch v3 Purple Talk →</a>
+    </div>
+
+    <!-- v3 Static Architecture -->
+    <div class="card">
+      <div>
+        <span class="tag tag-gold">Architecture Focus</span>
+        <h2>Holographic v3 (Clean Core)</h2>
+        <p class="desc">Architectural box panels and open gyroscope core with the dark room background. Drag to rotate.</p>
+      </div>
+      <a class="btn" href="holographic-orb-v3.html" target="_blank">Launch v3 →</a>
+    </div>
+
+    <!-- v2 Shader Blob -->
+    <div class="card">
+      <div>
+        <span class="tag tag-gold">Custom GLSL Shaders</span>
+        <h2>Holographic v2 (Particle Blob)</h2>
+        <p class="desc">Features GPU Simplex 3D noise shaders, 20,000 multi-layer particles, liquid-metal morphing blob center, moving sparks along rings, and shockwave pulses.</p>
+      </div>
+      <a class="btn" href="holographic-orb-v2.html" target="_blank">Launch v2 (Shaders) →</a>
+    </div>
+
+    <!-- v1 Original -->
+    <div class="card">
+      <div>
+        <span class="tag tag-gold">Foundational</span>
+        <h2>Holographic v1 (Original)</h2>
+        <p class="desc">First prototype built with 12 TorusGeometry rings, 4,800 points, circuit fragments, and dark laboratory HUD.</p>
+      </div>
+      <a class="btn" href="holographic-orb.html" target="_blank">Launch v1 →</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
