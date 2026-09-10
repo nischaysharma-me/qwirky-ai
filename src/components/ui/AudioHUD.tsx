@@ -63,12 +63,12 @@ export const AudioHUD: React.FC = () => {
   return (
     <div
       id="hud-ui"
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 select-none pointer-events-auto"
+      className="fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 sm:gap-3 select-none pointer-events-auto w-[96vw] max-w-fit pb-[env(safe-area-inset-bottom)]"
     >
       {/* Top Status Capsule */}
-      <div className="flex items-center gap-2.5 px-3.5 py-1 rounded-full bg-[#0b0f19]/85 border border-white/10 backdrop-blur-md text-[10px] tracking-widest font-mono-hud text-slate-300 uppercase shadow-lg">
+      <div className="flex items-center gap-2 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-[#0b0f19]/85 border border-white/10 backdrop-blur-md text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest font-mono-hud text-slate-300 uppercase shadow-lg max-w-[92vw] overflow-hidden">
         <span
-          className={`w-2 h-2 rounded-full transition-all duration-300 ${
+          className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 transition-all duration-300 ${
             talkMode === 'mic'
               ? 'bg-emerald-400 shadow-[0_0_8px_#34d399] animate-ping'
               : talkMode === 'sim'
@@ -76,45 +76,45 @@ export const AudioHUD: React.FC = () => {
               : 'bg-slate-500'
           }`}
         />
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 truncate">
           {talkMode === 'mic' ? (
-            <Ear className="w-3 h-3 text-emerald-400" />
+            <Ear className="w-3 h-3 text-emerald-400 shrink-0" />
           ) : talkMode === 'sim' ? (
-            <Brain className="w-3 h-3 text-amber-400 animate-pulse" />
+            <Brain className="w-3 h-3 text-amber-400 animate-pulse shrink-0" />
           ) : (
-            <Activity className="w-3 h-3 text-slate-400" />
+            <Activity className="w-3 h-3 text-slate-400 shrink-0" />
           )}
-          <span>{getStatusText()}</span>
+          <span className="truncate">{getStatusText()}</span>
         </div>
       </div>
 
       {/* Main Futuristic Glass Control Bar */}
-      <div className="flex items-center gap-3.5 bg-[#080c18]/90 border border-white/15 px-5 py-2.5 rounded-lg shadow-2xl backdrop-blur-xl">
+      <div className="flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 sm:gap-3.5 bg-[#080c18]/90 border border-white/15 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-xl shadow-2xl backdrop-blur-xl">
         {/* Metallic Theme Switcher */}
-        <div className="flex items-center gap-2.5">
-          <span className="text-[9px] tracking-widest text-slate-400 font-mono-hud uppercase hidden sm:inline">
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
+          <span className="text-[9px] tracking-widest text-slate-400 font-mono-hud uppercase hidden md:inline">
             THEME
           </span>
           <button
             onClick={toggleTheme}
-            className={`flex items-center gap-2 px-3 py-1.5 text-[11px] font-mono-hud uppercase tracking-wider rounded border transition-all duration-200 ${themeStyle.btnClass}`}
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 text-[10px] sm:text-[11px] font-mono-hud uppercase tracking-wider rounded border transition-all duration-200 min-h-[34px] sm:min-h-[36px] touch-manipulation active:scale-95 ${themeStyle.btnClass}`}
             title="Press 'C' to cycle metallic themes"
           >
-            <Palette className="w-3.5 h-3.5" />
-            <span className="font-semibold">{themeStyle.name}</span>
+            <Palette className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+            <span className="font-semibold text-[10px] sm:text-[11px]">{themeStyle.name}</span>
           </button>
 
           {/* Quick Metallic Preset Dots */}
-          <div className="flex items-center gap-1.5 px-1.5 py-1 bg-black/40 rounded border border-white/10">
+          <div className="flex items-center gap-1.5 px-2 py-1.5 bg-black/40 rounded border border-white/10">
             {THEME_OPTIONS.map((opt) => (
               <button
                 key={opt.id}
                 onClick={() => setTheme(opt.id)}
                 title={`Switch to ${opt.label}`}
-                className={`w-3 h-3 rounded-full transition-all duration-200 border ${
+                className={`w-3.5 h-3.5 sm:w-3 sm:h-3 rounded-full transition-all duration-200 border touch-manipulation ${
                   theme === opt.id
                     ? 'scale-125 border-white ring-1 ring-white/70'
-                    : 'border-white/30 opacity-60 hover:opacity-100 hover:scale-110'
+                    : 'border-white/30 opacity-60 hover:opacity-100 hover:scale-110 active:scale-95'
                 }`}
                 style={{ backgroundColor: opt.hex }}
               />
@@ -123,52 +123,52 @@ export const AudioHUD: React.FC = () => {
         </div>
 
         {/* Vertical Divider */}
-        <div className="w-[1px] h-5 bg-white/15" />
+        <div className="hidden sm:block w-[1px] h-5 bg-white/15" />
 
         {/* Voice Controls */}
-        <div className="flex items-center gap-2">
-          <span className="text-[9px] tracking-widest text-slate-400 font-mono-hud uppercase hidden sm:inline">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <span className="text-[9px] tracking-widest text-slate-400 font-mono-hud uppercase hidden md:inline">
             VOICE
           </span>
 
           {/* Mic Button */}
           <button
             onClick={toggleMic}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono-hud uppercase tracking-wider rounded border transition-all duration-200 ${
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 text-[10px] sm:text-[11px] font-mono-hud uppercase tracking-wider rounded border transition-all duration-200 min-h-[34px] sm:min-h-[36px] touch-manipulation active:scale-95 ${
               talkMode === 'mic'
                 ? 'bg-emerald-500/35 border-emerald-400 text-emerald-100 shadow-[0_0_14px_rgba(52,211,153,0.5)] ring-1 ring-emerald-400/50'
-                : 'bg-white/5 border-white/15 text-slate-300 hover:bg-white/10 hover:border-white/30'
+                : 'bg-white/5 border-white/15 text-slate-300 hover:bg-white/10 hover:border-white/30 active:bg-white/20'
             }`}
-            title="Toggle Microphone Listening (Hotkey: M)"
+            title="Toggle Microphone Listening"
           >
-            <Mic className="w-3.5 h-3.5" />
-            <span>MIC · M</span>
+            <Mic className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+            <span>MIC<span className="hidden sm:inline"> · M</span></span>
           </button>
 
           {/* Sim Button */}
           <button
             onClick={toggleSim}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono-hud uppercase tracking-wider rounded border transition-all duration-200 ${
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 text-[10px] sm:text-[11px] font-mono-hud uppercase tracking-wider rounded border transition-all duration-200 min-h-[34px] sm:min-h-[36px] touch-manipulation active:scale-95 ${
               talkMode === 'sim'
                 ? 'bg-amber-500/35 border-amber-300 text-white shadow-[0_0_14px_rgba(255,170,0,0.6)] ring-1 ring-amber-400/50'
-                : 'bg-white/5 border-white/15 text-slate-300 hover:bg-white/10 hover:border-white/30'
+                : 'bg-white/5 border-white/15 text-slate-300 hover:bg-white/10 hover:border-white/30 active:bg-white/20'
             }`}
-            title="Simulate Speech Output (Hotkey: T)"
+            title="Simulate Speech Output"
           >
-            <Radio className="w-3.5 h-3.5" />
-            <span>SIM · T</span>
+            <Radio className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+            <span>SIM<span className="hidden sm:inline"> · T</span></span>
           </button>
         </div>
 
         {/* Multi-Band Frequency Spectrum Visualizer */}
-        <div className="flex items-center gap-1.5 pl-2">
-          <div className="flex items-end gap-[3px] h-5 w-20 px-1 py-0.5 bg-black/40 rounded border border-white/10">
+        <div className="flex items-center gap-1 sm:gap-1.5 pl-1 sm:pl-2">
+          <div className="flex items-end gap-[2px] sm:gap-[3px] h-5 w-14 sm:w-20 px-1 py-0.5 bg-black/40 rounded border border-white/10">
             {hudBands.map((band, idx) => {
               const heightPct = Math.max(12, Math.min(100, Math.round(band * 100)));
               return (
                 <div
                   key={`eq-bar-${idx}`}
-                  className={`w-[5px] rounded-t-sm transition-all duration-75 bg-gradient-to-t ${themeStyle.eqGradient}`}
+                  className={`w-[4px] sm:w-[5px] rounded-t-sm transition-all duration-75 bg-gradient-to-t ${themeStyle.eqGradient}`}
                   style={{
                     height: `${heightPct}%`,
                     opacity: 0.35 + (band > 0.05 ? 0.65 : 0),

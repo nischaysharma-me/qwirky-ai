@@ -56,11 +56,30 @@ export function useAudioAnalyzer() {
       const AudioCtxClass =
         window.AudioContext ||
         (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtxClass) {
+        console.warn('Web Audio API is not supported in this environment');
+        return;
+      }
+
       const ctx = new AudioCtxClass();
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
+      }
       audioCtxRef.current = ctx;
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Microphone access requires a secure HTTPS connection or a supported mobile browser.');
+        stopMic();
+        return;
+      }
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
+
+      // Re-check resume state in case user prompt paused context
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
+      }
 
       const source = ctx.createMediaStreamSource(stream);
       const analyser = ctx.createAnalyser();
